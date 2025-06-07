@@ -13,6 +13,8 @@ public interface AutoresRepository extends JpaRepository<Autor,Long> {
     Optional<Libro> obtenerLibro(Autor autor);
     @Query("SELECT a FROM Autor a WHERE a.nombre=:nombre")
     Optional<Autor> obtenerAutor(String nombre);
+    @Query("SELECT a FROM Autor a WHERE a.fechaDeFallecimiento>=:fecha AND a.fechaDeNacimiento<=:fecha")
+    List<Autor> obtenerAutorVivo(Integer fecha);
 
 
 }
