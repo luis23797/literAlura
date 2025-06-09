@@ -8,9 +8,9 @@ import com.alura.literAlura.service.ConvierteDatos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
@@ -32,8 +32,11 @@ public class Main {
                 1 - Buscar libro
                 2 - Listar libros
                 3 - Listar Autores
-                4-  Listar Autores vivos en un determinado año
-                5-  Listar libros por idioma
+                4 - Listar Autores vivos en un determinado año
+                5 - Listar libros por idioma
+                6 - Top 10 libros mas descargados
+                7 - Estadisticos
+                8 - Buscar Autor por nombre
                 0 - Salir
                 """);
         opc = teclado.nextLine();
@@ -55,6 +58,15 @@ public class Main {
             case "5":
                 buscarPorIdioma();
                 break;
+            case "6":
+                topMasDescargados();
+                break;
+            case "7":
+                estadisticos();
+                break;
+            case "8":
+                buscarAutorPorNombre();
+                break;
             default:
                 System.out.println("Opcion invalida");
                 break;
@@ -62,6 +74,40 @@ public class Main {
         }
 
 
+    }
+
+    private void buscarAutorPorNombre() {
+        System.out.println("Ingrese el nombre del autor a buscar");
+        String nombre = teclado.nextLine();
+        Optional<Autor> autor = autoresRepository.obtenerAutorPorNombre(nombre);
+        if(autor.isPresent()) {
+            System.out.println(autor.get());
+        }else{
+            System.out.println("El autor no se encuentra registrado");
+            return;
+        }
+
+    }
+
+    private void estadisticos() {
+        List<Libro> libros = librosRepository.findAll();
+        DoubleSummaryStatistics statistics = libros.stream()
+                .map(l->l.getNumeroDeDescargas().doubleValue())
+                .mapToDouble(Double::doubleValue)
+                .summaryStatistics();
+        System.out.println("=============================================================");
+        System.out.println("El numero de libros en total registrados es de: " + statistics.getCount());
+        System.out.println("El promedio de descargas por libro es de: " + statistics.getAverage());
+        System.out.println("El mayor numero de descargas de todos los libros es " + statistics.getMax());
+        System.out.println("El menor numero de descargas de todos los libros es " + statistics.getMin());
+    }
+
+    private void topMasDescargados() {
+        List<Libro> libros = librosRepository.findAll();
+        libros.stream()
+                .sorted(Comparator.comparing(Libro::getNumeroDeDescargas).reversed())
+                .limit(10)
+                .forEach(System.out::println);
     }
 
     private void buscarPorIdioma() {
