@@ -33,6 +33,7 @@ public class Main {
                 2 - Listar libros
                 3 - Listar Autores
                 4-  Listar Autores vivos en un determinado año
+                5-  Listar libros por idioma
                 0 - Salir
                 """);
         opc = teclado.nextLine();
@@ -51,6 +52,9 @@ public class Main {
             case "4":
                 listarAutoresVivos();
                 break;
+            case "5":
+                buscarPorIdioma();
+                break;
             default:
                 System.out.println("Opcion invalida");
                 break;
@@ -58,6 +62,23 @@ public class Main {
         }
 
 
+    }
+
+    private void buscarPorIdioma() {
+        System.out.println("""
+                Ingrese un idioma 
+                es - español
+                en - ingles
+                fr - frances
+                pt - portugues
+                """);
+        String idioma = teclado.nextLine().toLowerCase();
+        List<Libro> libros = librosRepository.obtenerLibrosPorIdioma(idioma);
+        if(libros.isEmpty()){
+            System.out.println("No hay libros registrados en ese idioma");
+            return;
+        }
+        libros.forEach(System.out::println);
     }
 
     private void listarAutoresVivos() {
